@@ -1,0 +1,38 @@
+{
+  "schema": 1,
+  "kind": "fuzzy",
+  "parameters": {
+    "edge": 0.59691507821884,
+    "close": 0.3952501156528428,
+    "flank": 0.4444242292258478,
+    "power": 0.65,
+    "safety": 3.3481516942902534,
+    "pressure": 0.2,
+    "approach": 2.0,
+    "width": 0.25,
+    "hysteresis": 0.12
+  },
+  "metadata": {
+    "training_seed": 20261105,
+    "generations": 16,
+    "population": 18,
+    "validation_fitness": 6.416666666666667,
+    "default_validation_fitness": -1.2619047619047619,
+    "selected_generation": 16,
+    "validation_seeds": [
+      2000000,
+      2000001,
+      2000002,
+      2000003,
+      2000004,
+      2000005,
+      2000006,
+      2000007,
+      2000008,
+      2000009,
+      2000010,
+      2000011
+    ],
+    "algorithm": "elitist EA, tournament/crossover/Gaussian mutation"
+  }
+}

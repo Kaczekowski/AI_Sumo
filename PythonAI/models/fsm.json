@@ -1,0 +1,38 @@
+{
+  "schema": 1,
+  "kind": "fsm",
+  "parameters": {
+    "edge": 0.723137835717637,
+    "close": 0.4104754199923144,
+    "flank": 0.20995643875821404,
+    "power": 0.6746951106742561,
+    "safety": 2.531668249207055,
+    "pressure": 0.2,
+    "approach": 1.3689146789974198,
+    "width": 0.21338999550311982,
+    "hysteresis": 0.0834396342356853
+  },
+  "metadata": {
+    "training_seed": 20261105,
+    "generations": 16,
+    "population": 18,
+    "validation_fitness": 6.428571428571429,
+    "default_validation_fitness": -1.1547619047619047,
+    "selected_generation": 4,
+    "validation_seeds": [
+      2000000,
+      2000001,
+      2000002,
+      2000003,
+      2000004,
+      2000005,
+      2000006,
+      2000007,
+      2000008,
+      2000009,
+      2000010,
+      2000011
+    ],
+    "algorithm": "elitist EA, tournament/crossover/Gaussian mutation"
+  }
+}

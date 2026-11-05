@@ -1,2 +1,54 @@
-# Auto detect text files and perform LF normalization
-* text=auto
+# Unreal Engine — pliki generowane
+/Binaries/
+/DerivedDataCache/
+/Intermediate/
+/Saved/
+
+# Pliki generowane we wtyczkach
+/Plugins/**/Intermediate/
+/Plugins/**/Saved/
+/Plugins/**/DerivedDataCache/
+
+# Włącz tylko, jeśli wszystkie wtyczki można zbudować ze źródeł.
+# Wtyczki dostarczane wyłącznie jako binaria wymagają Binaries.
+# /Plugins/**/Binaries/
+
+# Visual Studio / Rider / VS Code
+/.vs/
+/.idea/
+/.vscode/
+*.sln
+*.suo
+*.sdf
+*.opensdf
+*.VC.db
+*.VC.VC.opendb
+*.vcxproj
+*.vcxproj.filters
+*.vcxproj.user
+*.code-workspace
+
+# Logi i pliki tymczasowe
+*.log
+*.tmp
+*.bak
+*~
+
+# System operacyjny
+.DS_Store
+Thumbs.db
+Desktop.ini
+
+# Python — serwer AI i trening
+__pycache__/
+*.py[cod]
+.venv/
+venv/
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+
+# Lokalne zmienne środowiskowe
+.env
+.env.*
+!.env.example

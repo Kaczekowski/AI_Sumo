@@ -1,0 +1,17 @@
+{
+	"version": 1,
+	"changelists": [
+		{
+			"guid": "00000000000000000000000000000000",
+			"description": "Default Uncontrolled Changelist",
+			"files": [
+				"C:/Users/kamil/Documents/Unreal Projects/AI_Sumo_Project/AI_Sumo/Unreal/Content/Blueprints/BP_SumoRobot.uasset",
+				"C:/Users/kamil/Documents/Unreal Projects/AI_Sumo_Project/AI_Sumo/Unreal/Content/Widgets/WBP_SumpHUD.uasset",
+				"C:/Users/kamil/Documents/Unreal Projects/AI_Sumo_Project/AI_Sumo/Unreal/Content/Widgets/WBP_SumoHUD.uasset",
+				"C:/Users/kamil/Documents/Unreal Projects/AI_Sumo_Project/AI_Sumo/Unreal/Content/Blueprints/E_SumoPhase.uasset",
+				"C:/Users/kamil/Documents/Unreal Projects/AI_Sumo_Project/AI_Sumo/Unreal/Content/Blueprints/BP_SumoManager.uasset",
+				"C:/Users/kamil/Documents/Unreal Projects/AI_Sumo_Project/AI_Sumo/Unreal/Content/Blueprints/BP_SumoArena.uasset"
+			]
+		}
+	]
+}
