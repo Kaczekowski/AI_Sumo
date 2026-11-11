@@ -1,0 +1,36 @@
+# Unreal Engine - pliki generowane (dowolny folder projektu: Unreal, Unreal 5.8, ...)
+Binaries/
+DerivedDataCache/
+Intermediate/
+Saved/
+.vs/
+.idea/
+.vscode/
+*.sln
+*.suo
+*.VC.db
+*.VC.VC.opendb
+*.vcxproj
+*.vcxproj.filters
+*.vcxproj.user
+*.code-workspace
+
+# Logi i pliki tymczasowe
+*.log
+*.tmp
+*.bak
+*~
+
+# System
+.DS_Store
+Thumbs.db
+Desktop.ini
+
+# Python
+__pycache__/
+*.py[cod]
+.venv/
+venv/
+.env
+.env.*
+!.env.example

@@ -3,6 +3,7 @@
 POST /start {"a":"fsm","b":"fuzzy"} -> {"session":"..."}
 POST /decide {"session":"...","a":{robot},"b":{robot},"arena_radius":300}
 -> {"a":{command},"b":{command}}
+POST /decide_csv (same body as /decide) -> text/plain "ax,ay,apower,astate,bx,by,bpower,bstate"
 POST /end {"session":"..."} -> {"ok":true}
 Only loopback, fixed model names, single-threaded ordered decision calls.
 """
@@ -33,17 +34,25 @@ def dispatch(path,data):
     return {k:agent.decide(dict(me=data[k],enemy=data[other],**common))
             for k,other,agent in (("a","b",agents[0]),("b","a",agents[1]))}
 
+def to_csv(result):
+    """Flat text for Blueprints (its Json nodes cannot read scalar fields):
+    "ax,ay,apower,astate,bx,by,bpower,bstate" """
+    return ",".join(f"{c['direction_x']:.4f},{c['direction_y']:.4f},{c['power']:.4f},{c['state']}"
+                    for c in (result["a"],result["b"]))
+
 class Handler(BaseHTTPRequestHandler):
     def do_POST(self):
+        csv=False
         try:
             length=int(self.headers.get("Content-Length","0"))
             if not 0<length<=65536: raise ValueError("Invalid body length")
-            result=dispatch(self.path,json.loads(self.rfile.read(length)))
-            body=json.dumps(result,allow_nan=False).encode()
+            csv=self.path=="/decide_csv"
+            result=dispatch("/decide" if csv else self.path,json.loads(self.rfile.read(length)))
+            body=(to_csv(result) if csv else json.dumps(result,allow_nan=False)).encode()
             self.send_response(200)
         except (ValueError,KeyError,TypeError) as exc:
             body=json.dumps(dict(error=str(exc))).encode();self.send_response(400)
-        self.send_header("Content-Type","application/json")
+        self.send_header("Content-Type","text/plain" if csv else "application/json")
         self.send_header("Content-Length",str(len(body)))
         self.end_headers();self.wfile.write(body)
 
