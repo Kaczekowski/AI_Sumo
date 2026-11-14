@@ -9,10 +9,13 @@ def norm(x, y):
 
 @dataclass(frozen=True)
 class Config:
-    arena: float = 300.0
+    arena: float = 900.0
     shrink: float = 0.86
     rounds: int = 10
     distance: float = 155.0
+    min_distance: float = 50.0
+    push_reward: float = 2.0
+    stall_penalty: float = 0.5
     restitution: float = 0.25
     # Uniform drag: v(t)=v0 exp(-drag*t); distance is the integrated full-turn travel.
     drag: float = 0.7
@@ -22,7 +25,7 @@ class Robot:
     x: float
     y: float
     mass: float = 1.0
-    radius: float = 16.0
+    radius: float = 50.0
     drive: float = 1.0
 
 @dataclass(frozen=True)
@@ -99,6 +102,14 @@ def move(a, b, ca, cb, arena, cfg=Config(), trace=False):
             collided = True
     return a, b, None, collided, frames
 
+def effective_push(before, after, command, elapsed, cfg):
+    # Credit only extra outward displacement versus the same command without impact.
+    free=advance(before,(math.cos(command.angle)*cfg.distance*before.drive*command.power,
+                         math.sin(command.angle)*cfg.distance*before.drive*command.power),elapsed)
+    actual_gain=math.hypot(after.x,after.y)-math.hypot(before.x,before.y)
+    causal_gain=math.hypot(after.x,after.y)-math.hypot(free.x,free.y)
+    return max(0.0,min(actual_gain,causal_gain))
+
 def initial(seed, cfg=Config(), masses=(1.0, 1.0)):
     rng = random.Random(seed)
     # Asymmetric, seeded legal starts; no side is assigned a systematic advantage.
@@ -118,10 +129,19 @@ def match(pa, pb, seed=0, cfg=Config(), masses=(1.0,1.0), record=False, swap=Fal
     arena = cfg.arena
     history = []
     contacts = 0
+    pushes=[0.0,0.0]; tiny_contacts=0; stalled_turns=0
     for turn in range(1,cfg.rounds+1):
         # Frozen observations, both decisions before any mutation.
         ca,cb = pa.act(a,b,arena,cfg),pb.act(b,a,arena,cfg)
-        a,b,winner,hit,frames = move(a,b,ca,cb,arena,cfg,record)
+        before_a,before_b=a,b
+        a,b,winner,hit,frames = move(a,b,ca,cb,arena,cfg,True)
+        travelled=math.hypot(a.x-before_a.x,a.y-before_a.y)+math.hypot(b.x-before_b.x,b.y-before_b.y)
+        stalled_turns+=travelled<20
+        if hit:
+            gain_a=effective_push(before_b,b,cb,frames[-1][0],cfg)
+            gain_b=effective_push(before_a,a,ca,frames[-1][0],cfg)
+            pushes[0]+=gain_a;pushes[1]+=gain_b
+            tiny_contacts+=max(gain_a,gain_b)<15
         contacts += hit
         next_arena = arena
         reason = "exit" if winner is not None else "playing"
@@ -142,4 +162,7 @@ def match(pa, pb, seed=0, cfg=Config(), masses=(1.0,1.0), record=False, swap=Fal
         arena = next_arena
         if winner is not None:
             return dict(winner=winner,reason=reason,turns=turn,contacts=contacts,
-                        seed=seed,swap=swap,history=history)
+                        seed=seed,swap=swap,history=history,push_cm=pushes,tiny_contacts=tiny_contacts,stalled_turns=stalled_turns)
+
+
+# ======================================================================

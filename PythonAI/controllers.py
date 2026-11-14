@@ -1,9 +1,9 @@
+from physics import Action, Config, Robot, move, norm, effective_push
 """Portable FSM and zero-order Sugeno fuzzy controllers. Only standard library."""
 import json
 import math
 import random
 from pathlib import Path
-from physics import Action, Config, Robot, move, norm
 
 # Bounds are also the genome schema. Each saved model contains actual learned values.
 BOUNDS = dict(edge=(0.55,0.9),close=(0.18,0.5),flank=(0.18,0.95),
@@ -31,16 +31,22 @@ class Controller:
         self.last_distance=None
         self.stalled=0
         self.rng=None
+        self.last_position=None
+        self.flank_side=1
 
     def act(self, me, enemy, arena, cfg=Config()):
         p=self.p
         if self.rng is None:
             # Local mixed strategy breaks mutual blocking, reproducible from the start.
             self.rng=random.Random(round(me.x*1000)*1000003+round(me.y*1000))
+            self.flank_side=self.rng.choice((-1,1))
         d=math.hypot(enemy.x-me.x,enemy.y-me.y)
         edge=(math.hypot(me.x,me.y)+me.radius)/arena
         close=d/arena
         self.stalled = self.stalled+1 if self.last_distance is not None and abs(d-self.last_distance)<8 else 0
+        if self.last_position is not None and math.hypot(me.x-self.last_position[0],me.y-self.last_position[1])<10:
+            self.stalled=max(self.stalled,1)
+        self.last_position=(me.x,me.y)
         self.last_distance=d
         if self.kind=="fsm":
             threshold=p["edge"]-(p["hysteresis"] if self.state=="RECOVER" else 0)
@@ -75,10 +81,15 @@ class Controller:
         predicted=Action(heading+math.pi,1)
         angles=[heading,heading+p["flank"],heading-p["flank"],
                 heading+1.15,heading-1.15,center]
-        candidates=[Action(a,power,self.state) for a in angles for power in (p["power"],.5,.15)]
+        # Add a contact-preserving oblique attack, scaled to current disc geometry.
+        contact_angle=math.asin(min(.95,(me.radius+enemy.radius)/max(d,1e-6)))*.65
+        angles.extend([heading+contact_angle,heading-contact_angle])
+        minimum=cfg.min_distance/(cfg.distance*me.drive)
+        if not 0<=minimum<=1:raise ValueError("Invalid minimum travel for this robot")
+        candidates=[Action(a,power,self.state) for a in angles for power in sorted({max(minimum,x) for x in (p["power"],.5,.15,1.0)})]
         best=None
         for c in candidates:
-            a,b,w,hit,_=move(me,enemy,c,predicted,arena,cfg)
+            a,b,w,hit,preview=move(me,enemy,c,predicted,arena,cfg,True)
             if w is None:
                 out_a=math.hypot(a.x,a.y)+a.radius>arena*cfg.shrink
                 out_b=math.hypot(b.x,b.y)+b.radius>arena*cfg.shrink
@@ -92,8 +103,14 @@ class Controller:
             offset=abs(math.atan2(math.sin(c.angle-heading),math.cos(c.angle-heading)))
             value=(outcome+pressure*rb-safety*(ra*.25+5*risk)
                    -approach*gap+4*flank*min(offset,1.15)+.03*c.power)
+            if hit:
+                push=effective_push(enemy,b,predicted,preview[-1][0],cfg)
+                value+=p["pressure"]*min(2.0,push/cfg.distance)*.5
             if self.stalled:
+                signed=math.atan2(math.sin(c.angle-heading),math.cos(c.angle-heading))
+                # Stable side preference instead of fresh random agitation every turn.
                 value+=self.rng.uniform(-2,2)*min(self.stalled,2)
+                value+=.3*flank*self.flank_side*math.sin(signed)
             if best is None or value>best[0]: best=(value,c)
         return best[1]
 
@@ -114,3 +131,6 @@ class Baseline:
         if self.kind=="center" and math.hypot(me.x,me.y)>.55*arena:
             angle=math.atan2(-me.y,-me.x)
         return Action(angle,1,"BASELINE")
+
+
+# ======================================================================
