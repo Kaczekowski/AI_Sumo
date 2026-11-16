@@ -1,0 +1,68 @@
+[
+  {
+    "version": "before",
+    "pair": "fsm-fsm",
+    "games": 80,
+    "wins": 0,
+    "draws": 80,
+    "push": 9702.914240289074,
+    "tiny": 232,
+    "stalls": 26,
+    "contacts": 460
+  },
+  {
+    "version": "before",
+    "pair": "fsm-fuzzy",
+    "games": 80,
+    "wins": 3,
+    "draws": 77,
+    "push": 9986.1441296877,
+    "tiny": 234,
+    "stalls": 30,
+    "contacts": 477
+  },
+  {
+    "version": "before",
+    "pair": "fuzzy-fuzzy",
+    "games": 80,
+    "wins": 6,
+    "draws": 74,
+    "push": 10479.511759478315,
+    "tiny": 256,
+    "stalls": 30,
+    "contacts": 516
+  },
+  {
+    "version": "after",
+    "pair": "fsm-fsm",
+    "games": 80,
+    "wins": 32,
+    "draws": 48,
+    "push": 12451.662599387771,
+    "tiny": 398,
+    "stalls": 56,
+    "contacts": 636
+  },
+  {
+    "version": "after",
+    "pair": "fsm-fuzzy",
+    "games": 80,
+    "wins": 13,
+    "draws": 67,
+    "push": 10119.57823607528,
+    "tiny": 480,
+    "stalls": 69,
+    "contacts": 708
+  },
+  {
+    "version": "after",
+    "pair": "fuzzy-fuzzy",
+    "games": 80,
+    "wins": 10,
+    "draws": 70,
+    "push": 7978.333874481579,
+    "tiny": 516,
+    "stalls": 94,
+    "contacts": 722
+  }
+]

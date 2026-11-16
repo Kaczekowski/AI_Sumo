@@ -1,12 +1,4 @@
-"""Optional local HTTP bridge for UE runtime. Run: python ue_server.py
 
-POST /start {"a":"fsm","b":"fuzzy"} -> {"session":"..."}
-POST /decide {"session":"...","a":{robot},"b":{robot},"arena_radius":300}
--> {"a":{command},"b":{command}}
-POST /decide_csv (same body as /decide) -> text/plain "ax,ay,apower,astate,bx,by,bpower,bstate"
-POST /end {"session":"..."} -> {"ok":true}
-Only loopback, fixed model names, single-threaded ordered decision calls.
-"""
 import argparse
 import json
 import uuid

@@ -1,11 +1,9 @@
 from physics import Action, Config, Robot, move, norm, effective_push
-"""Portable FSM and zero-order Sugeno fuzzy controllers. Only standard library."""
 import json
 import math
 import random
 from pathlib import Path
 
-# Bounds are also the genome schema. Each saved model contains actual learned values.
 BOUNDS = dict(edge=(0.55,0.9),close=(0.18,0.5),flank=(0.18,0.95),
               power=(0.65,1.0),safety=(0.5,4.0),pressure=(0.2,3.0),
               approach=(0.2,2.0),width=(0.06,0.25),hysteresis=(0.02,0.12))
@@ -37,7 +35,6 @@ class Controller:
     def act(self, me, enemy, arena, cfg=Config()):
         p=self.p
         if self.rng is None:
-            # Local mixed strategy breaks mutual blocking, reproducible from the start.
             self.rng=random.Random(round(me.x*1000)*1000003+round(me.y*1000))
             self.flank_side=self.rng.choice((-1,1))
         d=math.hypot(enemy.x-me.x,enemy.y-me.y)
@@ -59,7 +56,6 @@ class Controller:
             approach=p["approach"]
             flank=p["flank"] if self.state=="FLANK" else 0.0
         else:
-            # Four fuzzy rules; product AND; normalized Sugeno consequents.
             danger=ramp(edge,p["edge"],p["width"])
             near=1-ramp(close,p["close"],p["width"])
             stuck=min(1.0,self.stalled/2)

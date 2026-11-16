@@ -1,4 +1,4 @@
-"""Deterministic event-driven 2D physics; no AI or GUI dependencies."""
+
 from dataclasses import dataclass, replace, asdict
 import math
 import random
@@ -17,7 +17,6 @@ class Config:
     push_reward: float = 2.0
     stall_penalty: float = 0.5
     restitution: float = 0.25
-    # Uniform drag: v(t)=v0 exp(-drag*t); distance is the integrated full-turn travel.
     drag: float = 0.7
 
 @dataclass(frozen=True)
@@ -62,14 +61,7 @@ def advance(r, v, t):
     return replace(r, x=r.x+v[0]*t, y=r.y+v[1]*t)
 
 def move(a, b, ca, cb, arena, cfg=Config(), trace=False):
-    """Exact swept contact and first boundary crossing, including the post-impact path.
-
-    Parameter s is integrated drag time normalized to [0,1]. Identical linear
-    drag on both bodies preserves straight paths and event ordering in s.
-    A collision applies an impulse; commands never change during this turn.
-    There can be at most one contact for two free ballistic discs.
-    winner: 0=A, 1=B, -1=simultaneous exit, None=no exit.
-    """
+    
     velocities = []
     for r, c in ((a, ca), (b, cb)):
         if not math.isfinite(c.angle) or not math.isfinite(c.power) or not 0 <= c.power <= 1:
@@ -103,7 +95,7 @@ def move(a, b, ca, cb, arena, cfg=Config(), trace=False):
     return a, b, None, collided, frames
 
 def effective_push(before, after, command, elapsed, cfg):
-    # Credit only extra outward displacement versus the same command without impact.
+ 
     free=advance(before,(math.cos(command.angle)*cfg.distance*before.drive*command.power,
                          math.sin(command.angle)*cfg.distance*before.drive*command.power),elapsed)
     actual_gain=math.hypot(after.x,after.y)-math.hypot(before.x,before.y)
@@ -112,7 +104,6 @@ def effective_push(before, after, command, elapsed, cfg):
 
 def initial(seed, cfg=Config(), masses=(1.0, 1.0)):
     rng = random.Random(seed)
-    # Asymmetric, seeded legal starts; no side is assigned a systematic advantage.
     angle = rng.uniform(-math.pi, math.pi)
     sep = rng.uniform(85, 125)
     cx, cy = rng.uniform(-35,35), rng.uniform(-35,35)
@@ -131,7 +122,7 @@ def match(pa, pb, seed=0, cfg=Config(), masses=(1.0,1.0), record=False, swap=Fal
     contacts = 0
     pushes=[0.0,0.0]; tiny_contacts=0; stalled_turns=0
     for turn in range(1,cfg.rounds+1):
-        # Frozen observations, both decisions before any mutation.
+
         ca,cb = pa.act(a,b,arena,cfg),pb.act(b,a,arena,cfg)
         before_a,before_b=a,b
         a,b,winner,hit,frames = move(a,b,ca,cb,arena,cfg,True)
@@ -165,4 +156,4 @@ def match(pa, pb, seed=0, cfg=Config(), masses=(1.0,1.0), record=False, swap=Fal
                         seed=seed,swap=swap,history=history,push_cm=pushes,tiny_contacts=tiny_contacts,stalled_turns=stalled_turns)
 
 
-# ======================================================================
+

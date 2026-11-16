@@ -1,0 +1,39 @@
+{
+  "schema": 1,
+  "kind": "fuzzy",
+  "parameters": {
+    "edge": 0.7810082816638335,
+    "close": 0.3477999195190186,
+    "flank": 0.4045700412510373,
+    "power": 0.8292522932491274,
+    "safety": 4.0,
+    "pressure": 2.654724733333139,
+    "approach": 0.3669935494762385,
+    "width": 0.23353911644269637,
+    "hysteresis": 0.04300725720367134
+  },
+  "metadata": {
+    "training_seed": 20261114,
+    "generations": 4,
+    "population": 10,
+    "validation_fitness": 0.10725215228187057,
+    "default_validation_fitness": -1.6232782093201228,
+    "initial_validation_fitness": -2.7129229957298424,
+    "selected_candidate": 5,
+    "validation_seeds": [
+      2000000,
+      2000001,
+      2000002,
+      2000003,
+      2000004,
+      2000005,
+      2000006,
+      2000007,
+      2000008,
+      2000009,
+      2000010,
+      2000011
+    ],
+    "algorithm": "elitist EA, tournament/crossover/Gaussian mutation"
+  }
+}
